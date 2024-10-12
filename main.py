@@ -17,7 +17,6 @@ async def on_ready():
 # respond with "pong" to a "!ping" message
 @bot.command()
 async def ping(ctx):
-    print("oh")
     await ctx.send('pong')
 
 
