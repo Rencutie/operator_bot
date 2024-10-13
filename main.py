@@ -2,6 +2,9 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 import os
+import json
+
+import level.py
 
 # Load your bot token from environment variables
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -26,69 +29,12 @@ async def on_ready():
 # Example slash command: /ping
 @bot.tree.command(name="ping", description="Replies with Pong!")
 async def ping(interaction: discord.Interaction):
-    await interaction.response.send_message("Pong!")
+    await interaction.response.send_message("Pong!")    
 
 @bot.event
 async def on_message(message):
-    """
-        get userID
-        call loadData
-        call checkUserLastText
-        if true, call addExp
-        check if he level up and call level up text
-
-        does not return 
-    """
-    if message.author.bot:
-        return
-    TODO
-
-async def loadData(userID):
-    """
-        open json and return disctionary
-        if user not inside, return a call of createUser
-    """
-    TODO
-
-async def createUser(userID):
-    """
-        make a new json object 
-        level 0, 0 exp, username
-        return dictionary of its data
-    """
+    userID = message.author.id
+    level.onLevel(message, userID)
     
-    TODO
-
-async def checkUserLastText(userID):
-    """
-        check the last time the
-        user got exp added and
-        return true if it's more than 60s ago
-    """
-    TODO
-
-async def addExp(userID):
-    """
-        add a random number between 7 and 13 to the
-        users exp 
-    """
-    TODO
-
-async def levelUpMessage(userData):
-    """
-        send a pretty message with the level archived and username
-        userData : dictionary
-    """
-    TODO
-
-@bot.command
-async def level(ctx):
-    # userID = [TODO]
-    # userData = loadData
-    # message with current lvl and exp
-    pass
-
-
-
 # Run the bot
 bot.run(TOKEN)
