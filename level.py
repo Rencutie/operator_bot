@@ -1,9 +1,6 @@
 import json
-import discord
-from discord import app_commands
-from discord.ext import commands
 from datetime import datetime, timedelta
-
+import random
 async def onLevel(message, userID, username):
     """
         get userID
@@ -19,10 +16,10 @@ async def onLevel(message, userID, username):
         createUser(dataDict, userID, username)
     # no save because checkUserLastText is true 
     # if just created
-    if checkUserLastText(dataDict):
-        updateUserLastText(dataDict)
+    if checkUserLastText(dataDict, userID):
+        updateUserLastText(dataDict, userID)
         addExp(dataDict, userID)
-        if levelUp(dataDict, userID):
+        if checkLvlUp(dataDict, userID):
             levelUpMessage(dataDict, userID)
         saveData(dataDict)
 
@@ -35,15 +32,15 @@ def loadData():
 
 def saveData(dataDict):
     with open('level.json', 'w') as file:
-        json.dump(data, file, indent=4)
+        json.dump(dataDict, file, indent=4)
 
 def createUser(dataDict, userID, username):
     """
-        make a new json object 
-        and adds it to the dataDict
+    Make a new user entry and add it to the dataDict.
     """
-    userDict = {'userID' : userID, 'level' : 1, 'exp' : 0, "username" : username, 'lastText' : 0}
-    dataDict.append(userDict)
+    userDict = {'userID': userID, 'level': 1, 'exp': 0, "username": username, 'lastText': 0}
+    dataDict[userID] = userDict
+
 
 def checkUserLastText(dataDict, userID):
     """
@@ -68,7 +65,7 @@ def updateUserLastText(dataDict, userID):
         in a ISO format
     """
     current_time = datetime.now()
-    dataDict[userID]['lastText'] = current_time
+    dataDict[userID]['lastText'] = current_time.isoformat()
 
 
 def checkLvlUp(dataDict, userID):
@@ -79,6 +76,8 @@ def checkLvlUp(dataDict, userID):
     current_level = dataDict[userID]['level']
     required_xp = xp_requirements[current_level]
     if dataDict[userID]['exp'] >= required_xp:
+        dataDict[userID]['level'] += 1
+        dataDict[userID]['exp'] = dataDict[userID]['exp'] - required_xp
         return True
     return False
     TODO
@@ -88,7 +87,7 @@ def addExp(dataDict, userID):
         add a random number between 7 and 13 to the
         users exp 
     """
-    userData[userID]['exp'] = userData[userID]['exp'] + random.randint(7, 13)
+    dataDict[userID]['exp'] = dataDict[userID]['exp'] + random.randint(7, 13)
 
 async def levelUpMessage(message, dataDict, userID):
     """
@@ -96,15 +95,6 @@ async def levelUpMessage(message, dataDict, userID):
         userData : dictionary
     """
     await ctx.send(f"Congratulations, {message.author.mentiop}! You have reached level {dataDict[userID]['level']}")
-
-
-@bot.command
-async def level(ctx):
-    userID = ctx.author.id
-    userDict = loadData()
-    await ctx.send(f"{ctx.author.name}, your current level is {dataDict[userID]['level']}\n Your current exp is {dataDict[userID]['exp']} out of {xp_requirements[dataDict[userID]['level']]} required for level up.")
-
-
 
 
 

@@ -10,7 +10,7 @@ import level
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 # Set up the bot
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 intents.message_content = True
 
 # Create the bot object
@@ -35,10 +35,22 @@ async def ping(interaction: discord.Interaction):
 async def on_message(message):
     if message.author.bot:
         return
-    userID = message.author.id
-    username = message.author.name
-    level.onLevel(message, userID, username)
 
+    userID = str(message.author.id)  # Convert userID to string
+    username = message.author.name
+    await level.onLevel(message, userID, username)
+    await bot.process_commands(message)
+
+@bot.command()
+async def ping(ctx):
+    await ctx.send("Pong!")
+
+@bot.command()
+async def lvl(ctx):
+    userID = str(ctx.author.id)
+    dataDict = level.loadData()
+    print('uwu')
+    await ctx.send(f"{ctx.author.name}, your current level is {dataDict[userID]['level']}\n Your current exp is {dataDict[userID]['exp']} out of {level.xp_requirements[dataDict[userID]['level']]} required for level up.")
 
 # Run the bot
 bot.run(TOKEN)
