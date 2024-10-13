@@ -2,9 +2,9 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 import os
-import json
 
-import level.py
+# local imports
+import level
 
 # Load your bot token from environment variables
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -35,6 +35,7 @@ async def ping(interaction: discord.Interaction):
 async def on_message(message):
     userID = message.author.id
     level.onLevel(message, userID)
-    
+
+
 # Run the bot
 bot.run(TOKEN)
