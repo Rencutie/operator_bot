@@ -33,8 +33,11 @@ async def ping(interaction: discord.Interaction):
 
 @bot.event
 async def on_message(message):
+    if message.author.bot:
+        return
     userID = message.author.id
-    level.onLevel(message, userID)
+    username = message.author.name
+    level.onLevel(message, userID, username)
 
 
 # Run the bot
