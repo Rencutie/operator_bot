@@ -50,7 +50,7 @@ async def lvl(ctx):
     userID = str(ctx.author.id)
     dataDict = level.loadData()
     print('uwu')
-    await ctx.send(f"{ctx.author.name}, your current level is {dataDict[userID]['level']}\n Your current exp is {dataDict[userID]['exp']} out of {level.xp_requirements[dataDict[userID]['level']]} required for level up.")
+    await ctx.send(f"{ctx.author.name}, your current level is {dataDict[userID]['level']}\n Your current exp is {dataDict[userID]['exp']} out of {level.xp_requirements[dataDict[userID]['level']]} required to level up.")
 
 # Run the bot
 bot.run(TOKEN)

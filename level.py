@@ -1,6 +1,7 @@
 import json
 from datetime import datetime, timedelta
 import random
+
 async def onLevel(message, userID, username):
     """
         get userID
@@ -14,11 +15,13 @@ async def onLevel(message, userID, username):
     dataDict = loadData()
     if userID not in dataDict :
         createUser(dataDict, userID, username)
+
     # no save because checkUserLastText is true 
     # if just created
     if checkUserLastText(dataDict, userID):
         updateUserLastText(dataDict, userID)
         addExp(dataDict, userID)
+
         if checkLvlUp(dataDict, userID):
             levelUpMessage(dataDict, userID)
         saveData(dataDict)
@@ -119,7 +122,3 @@ def generate_level_xp(max_level=100, base_xp=100, growth_rate=1.1):
 
 # Execute the function when the module is imported
 xp_requirements = generate_level_xp()
-
-# Optionally print the XP requirements
-for level, xp in xp_requirements.items():
-    print(f"Level {level}: {xp} XP")
