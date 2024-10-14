@@ -16,7 +16,7 @@ intents.message_content = True
 # Create the bot object
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-# Create a tree object for slash commands
+# for slash commands
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user}!')
@@ -26,7 +26,7 @@ async def on_ready():
     except Exception as e:
         print(f'Error syncing commands: {e}')
 
-# Example slash command: /ping
+# slash command: /ping
 @bot.tree.command(name="ping", description="Replies with Pong!")
 async def ping(interaction: discord.Interaction):
     await interaction.response.send_message("Pong!")    
@@ -35,22 +35,18 @@ async def ping(interaction: discord.Interaction):
 async def on_message(message):
     if message.author.bot:
         return
-
     userID = str(message.author.id)  # Convert userID to string
     username = message.author.name
     await level.onLevel(message, userID, username)
     await bot.process_commands(message)
 
-@bot.command()
-async def ping(ctx):
-    await ctx.send("Pong!")
 
-@bot.command()
-async def lvl(ctx):
-    userID = str(ctx.author.id)
-    dataDict = level.loadData()
-    print('uwu')
-    await ctx.send(f"{ctx.author.name}, your current level is {dataDict[userID]['level']}\n Your current exp is {dataDict[userID]['exp']} out of {level.xp_requirements[dataDict[userID]['level']]} required to level up.")
+def load_cogs():
+    for filename in os.listdir('./cogs'):
+        if filename.endswith('.py'):
+            bot.load_extension(f'cogs.{filename[:-3]}')
+load_cogs()
+
 
 # Run the bot
 bot.run(TOKEN)
