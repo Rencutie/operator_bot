@@ -54,13 +54,13 @@ class LvlCmd(commands.Cog):
             if current_exp < amount:
                 amount -= current_exp
                 current_exp = 0
-                if level > 1 :
-                    level -= 1
-                    current_exp = level.xp_requirements[level]
+                if current_lvl > 1 :
+                    current_lvl -= 1
+                    current_exp = level.xp_requirements[current_lvl]
             else:
                 current_exp -= amount
                 amount = 0
-        dataDict[userID]['level'] = current_level
+        dataDict[userID]['level'] = current_lvl
         dataDict[userID]['exp'] = current_exp
         level.saveData(dataDict)
 
