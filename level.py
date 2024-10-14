@@ -20,7 +20,7 @@ async def onLevel(message, userID, username):
     # if just created
     if checkUserLastText(dataDict, userID):
         updateUserLastText(dataDict, userID)
-        addExp(dataDict, userID)
+        addExperience(dataDict, userID)
 
         if checkLvlUp(dataDict, userID):
             levelUpMessage(dataDict, userID)
@@ -85,7 +85,7 @@ def checkLvlUp(dataDict, userID):
     return False
     TODO
 
-def addExp(dataDict, userID):
+def addExperience(dataDict, userID):
     """
         add a random number between 7 and 13 to the
         users exp 
