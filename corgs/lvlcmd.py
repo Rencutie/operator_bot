@@ -7,7 +7,7 @@ class LvlCmd(commands.Cog):
         self.bot = bot
     
     @commands.command()
-    async def lvl(ctx, member: discord.Member = None):
+    async def lvl(self, ctx, member: discord.Member = None):
         if member == None :
             userID = str(ctx.author.id)
         else :
@@ -15,9 +15,19 @@ class LvlCmd(commands.Cog):
         dataDict = level.loadData()
         await ctx.send(f"{ctx.author.name}, your current level is {dataDict[userID]['level']}\nYour current exp is {dataDict[userID]['exp']} out of {level.xp_requirements[dataDict[userID]['level']]} required to level up.")
 
+    @commands.slash_command(name ="lvl", description="show someone's lvl. no args for self")
+    async def slash_lvl(self, ctx, member: discord.Member = None):
+        if member == None :
+            userID = str(ctx.author.id)
+        else :
+            userID = member.id
+        dataDict = level.loadData()
+        await ctx.send(f"{ctx.author.name}, your current level is {dataDict[userID]['level']}\nYour current exp is {dataDict[userID]['exp']} out of {level.xp_requirements[dataDict[userID]['level']]} required to level up.")
+
+
     @commands.command()
     @commands.has_permissions(administration=True)
-    async def addExp(ctx, member: discord.Member, amount):
+    async def addExp(self, ctx, member: discord.Member, amount):
         userID = str(member.id)
         dataDict = level.loadData()
         current_level = dataDict[userID]['level']
@@ -34,7 +44,7 @@ class LvlCmd(commands.Cog):
     
     @commands.command()
     @commands.has_permissions(administration=True)
-    async def setLvl(ctx, member: discord.Member, lvl):
+    async def setLvl(self, ctx, member: discord.Member, lvl):
         userID= str(member.id)
         dataDict = level.loadData()
         initLvl = dataDict[userID]['level']
@@ -45,7 +55,7 @@ class LvlCmd(commands.Cog):
     
     @commands.command()
     @commands.has_permissions(administration=True)
-    async def rmexp(ctx, member: discord.Member, amount):
+    async def rmexp(self, ctx, member: discord.Member, amount):
         userID = str(member.id)
         dataDict = level.loadData()
         current_lvl = dataDict[userID]['level']
