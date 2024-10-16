@@ -102,7 +102,7 @@ async def levelUpMessage(message, dataDict, userID):
 
 
 
-def generate_level_xp(max_level=100, base_xp=100, growth_rate=1.1):
+def generate_level_xp(max_level=99, base_xp=100, growth_rate=1.1):
     """
     Generate a dictionary with required XP for leveling up.
     

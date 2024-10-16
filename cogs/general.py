@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from discord import app_commands
 
 class General(commands.Cog):
     def __init__(self, bot):
@@ -9,11 +10,11 @@ class General(commands.Cog):
     async def ping(self, ctx):
         await ctx.send('Pong!')
 
-    @commands.slash_command(name="ping", description="check if the bot is on")
+    @app_commands.command(name="ping", description="check if the bot is on")
     async def slash_ping(self, ctx):
-        await ctx.send('Pong!')
+        await interaction.response.send_message('Pong!')
 
 
 
-def setup(bot):
-    bot.add_cog(General(bot))
+async def setup(bot):
+    await bot.add_cog(General(bot))

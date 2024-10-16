@@ -23,16 +23,12 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user}!')
+    await load_cogs()
     try:
         synced = await bot.tree.sync()  # Sync commands with Discord
         print(f'Successfully synced {len(synced)} commands')
     except Exception as e:
         print(f'Error syncing commands: {e}')
-
-# slash command: /ping
-@bot.tree.command(name="ping", description="Replies with Pong!")
-async def ping(interaction: discord.Interaction):
-    await interaction.response.send_message("Pong!")    
 
 @bot.event
 async def on_message(message):
@@ -44,11 +40,10 @@ async def on_message(message):
     await bot.process_commands(message)
 
 
-def load_cogs():
+async def load_cogs():
     for filename in os.listdir('./cogs'):
         if filename.endswith('.py'):
-            bot.load_extension(f'cogs.{filename[:-3]}')
-load_cogs()
+            await bot.load_extension(f'cogs.{filename[:-3]}')
 
 
 # Run the bot
