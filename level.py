@@ -23,7 +23,7 @@ async def onLevel(message, userID, username):
         addExperience(dataDict, userID)
 
         if checkLvlUp(dataDict, userID):
-            levelUpMessage(dataDict, userID)
+            await levelUpMessage(message, dataDict, userID)
         saveData(dataDict)
 
 def loadData():
@@ -97,7 +97,7 @@ async def levelUpMessage(message, dataDict, userID):
         send a pretty message with the level archived and username
         userData : dictionary
     """
-    await ctx.send(f"Congratulations, {message.author.mentiop}! You have reached level {dataDict[userID]['level']}")
+    await message.channel.send(f"Congratulations, {message.author.mention}! You have reached level {dataDict[userID]['level']}")
 
 
 
