@@ -30,11 +30,11 @@ def loadData():
     """
         read the json file and return the data
     """
-    with open('level.json', 'r') as file :
+    with open('storage/level.json', 'r') as file :
         return json.load(file)
 
 def saveData(dataDict):
-    with open('level.json', 'w') as file:
+    with open('storage/level.json', 'w') as file:
         json.dump(dataDict, file, indent=4)
 
 def createUser(dataDict, userID, username):
