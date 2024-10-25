@@ -11,7 +11,7 @@ class General(commands.Cog):
         await ctx.send('Pong!')
 
     @app_commands.command(name="ping", description="check if the bot is on")
-    async def slash_ping(self, ctx):
+    async def slash_ping(self, Interaction: discord.Interaction):
         await interaction.response.send_message('Pong!')
 
 

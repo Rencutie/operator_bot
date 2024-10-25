@@ -21,9 +21,6 @@ class LvlCmd(commands.Cog):
         current_exp = dataDict[userID]['exp']
         await ctx.send(f"{member.name}, your current level is {dataDict[userID]['level']}\nYour current exp is {dataDict[userID]['exp']} out of {level.xp_requirements[dataDict[userID]['level']]} required to level up.")
 
-    @lvl.error
-    async def lvl_error(self, ctx, error):
-        await handle_member_not_found(ctx, error)
 
 
     @app_commands.command(name ="lvl", description="show a user's level. Show self if no user is given")
@@ -37,11 +34,9 @@ class LvlCmd(commands.Cog):
             await interaction.response.send_message(f"{member.mention} is not in the database.\nPrehaps they have never sent a message")
             return
 
-        await interaction.response.send_message(f"{ctx.author.name}, your current level is {dataDict[userID]['level']}\nYour current exp is {dataDict[userID]['exp']} out of {level.xp_requirements[dataDict[userID]['level']]} required to level up.")
+        await interaction.response.send_message(f"{member.name}, your current level is {dataDict[userID]['level']}\nYour current exp is {dataDict[userID]['exp']} out of {level.xp_requirements[dataDict[userID]['level']]} required to level up.")
 
-    @slash_lvl.error
-    async def slash_lvl_error(self, interaction, error):
-        await handle_member_not_found(interaction, error)
+    
 
     @commands.command(name="addexp")
     @commands.has_permissions(administrator=True)
@@ -87,12 +82,15 @@ class LvlCmd(commands.Cog):
     def add_exp_logic(self, dataDict, userID, amount):
         current_level = dataDict[userID]['level']
         current_exp = dataDict[userID]['exp'] + amount
-        treshold = level.xp_requirements[current_level]
-
+        try:
+            treshold = level.xp_requirements[current_level]
+        except KeyError:
+            dataDict[userID]['exp'] = current_exp
+            return current_level, current_exp+amount
         while current_exp >= treshold:
             current_level += 1
             current_exp -= treshold
-            if current_lvl >= 100:
+            if current_level >= 100:
                 break # if max level reached, break loop
             treshold = level.xp_requirements[current_level]
 
@@ -179,7 +177,7 @@ class LvlCmd(commands.Cog):
         dataDict[userID]['level'] = current_lvl
         dataDict[userID]['exp'] = current_exp
         level.saveData(dataDict)
-        await interaction.response.send(f"Removed experience points from {member.mention}. They are now at level {current_lvl} with {current_exp} exp.")
+        await interaction.response.send_message(f"Removed experience points from {member.mention}. They are now at level {current_lvl} with {current_exp} exp.")
 
 
     def rmExp_logic(self, dataDict, userID, amount):
@@ -198,5 +196,34 @@ class LvlCmd(commands.Cog):
                 current_exp -= amount
                 amount = 0
         return current_lvl, current_exp
+
+
+
+
+    @lvl.error
+    async def lvl_error(self, ctx, error):
+        await handle_member_not_found(ctx, error)
+
+
+    @addExp.error
+    async def addExp_error(self, ctx, error):
+        await handle_member_not_found(ctx, error)
+        await handle_missing_permissions(ctx, error)
+        await handle_missing_arg(ctx, error)
+
+
+    @rmExp.error
+    async def rmExp_error(self, ctx, error):
+        await handle_member_not_found(ctx, error)
+        await handle_missing_permissions(ctx, error)
+        await handle_missing_arg(ctx, error)
+    
+
+    @setLvl.error
+    async def setLvl_error(self, ctx, error):
+        await handle_member_not_found(ctx, error)
+        await handle_missing_permissions(ctx, error)
+        await handle_missing_arg(ctx, error)
+    
 async def setup(bot):
     await bot.add_cog(LvlCmd(bot))
