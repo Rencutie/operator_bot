@@ -6,7 +6,7 @@ class SetUp(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
        
-        with open("reaction_roles.json", "r") as file:
+        with open("storage/reaction_roles.json", "r") as file:
             try:
                 self.reaction_roles = json.load(file)
             except :
@@ -60,7 +60,7 @@ class SetUp(commands.Cog):
 
 
 def save_reaction_roles():
-    with open("reaction_roles.json", "w") as file:
+    with open("storage/reaction_roles.json", "w") as file:
         json.dump(reaction_roles, file)
 
 async def setup(bot):
