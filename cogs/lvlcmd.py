@@ -59,7 +59,7 @@ class LvlCmd(commands.Cog):
         await ctx.send(f"Added {amount} EXP to {member.mention}.\nNew Level: {current_level}\nNew EXP: {current_exp}")
 
     # Slash command version of adding experience points
-    @app_commands.command(name="addexp", description="Add experience points to a user.")
+    @app_commands.command(name="addexp", description="Add experience points to a user. (admin only)")
     @app_commands.checks.has_permissions(administrator=True)
     async def slash_addExp(self, interaction: discord.Interaction, member: discord.Member, amount: int):
         if member == None:
@@ -121,7 +121,7 @@ class LvlCmd(commands.Cog):
         await ctx.send(f"Set {member.mention} level to {lvl}; experiance set to 0\nWas level {initLvl}")
 
 
-    @app_commands.command(name="setlvl", description="set a user's level to a given number")
+    @app_commands.command(name="setlvl", description="set a user's level to a given number (admin only)")
     @app_commands.checks.has_permissions(administrator=True)
     async def slash_setLvl(self, interaction:discord.Interaction, member: discord.Member, lvl:int):
         if lvl < 1:
@@ -161,7 +161,7 @@ class LvlCmd(commands.Cog):
         await ctx.send(f"Removed experience points from {member.mention}. They are now at level {current_lvl} with {current_exp} exp.")
 
     
-    @app_commands.command(name="removeexp", description="remove a said amount of exp to a user")
+    @app_commands.command(name="removeexp", description="remove a said amount of exp to a user (admin only)")
     @app_commands.checks.has_permissions(administrator=True)
     async def slash_rmExp(self, interaction:discord.Interaction, member:discord.Member, amount:int):
         if amount < 1:
@@ -197,6 +197,16 @@ class LvlCmd(commands.Cog):
                 amount = 0
         return current_lvl, current_exp
 
+    # to be done in the future :
+
+    # @app_commands.command(name="leaderboard", description="Shows the top 10 users with the highest levels")
+    # async def slash_leaderboard(self, interaction: discord.Interaction):
+    #     dataDict = level.loadData()
+    #     sorted_data = sorted(dataDict.items(), key=lambda x: x[1]['level'], reverse=True)
+    #     leaderboard = []
+    #     for i, (userID, data) in enumerate(sorted_data[:10], start=1):
+    #         member = await ctx.guild.fetch_member(int(userID))
+    #         leaderboard.append(f"{i}. {member.display_name} - Level: {data['level']}")
 
 
 

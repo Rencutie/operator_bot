@@ -83,7 +83,6 @@ def checkLvlUp(dataDict, userID):
         dataDict[userID]['exp'] = dataDict[userID]['exp'] - required_xp
         return True
     return False
-    TODO
 
 def addExperience(dataDict, userID):
     """

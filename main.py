@@ -35,7 +35,7 @@ async def on_message(message):
         return
     userID = str(message.author.id) 
     username = message.author.name
-    level.onLevel(message, userID, username)
+    await level.onLevel(message, userID, username)
     await bot.process_commands(message)
 
 
