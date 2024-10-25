@@ -3,7 +3,7 @@ from discord import app_commands
 from dotenv import load_dotenv
 from discord.ext import commands
 import os
-
+from cogs.setup import SetUp
 # local imports
 import level
 
@@ -34,10 +34,24 @@ async def on_ready():
 async def on_message(message):
     if message.author.bot:
         return
-    userID = str(message.author.id)  # Convert userID to string
+    userID = str(message.author.id) 
     username = message.author.name
-    await level.onLevel(message, userID, username)
+    level.onLevel(message, userID, username)
     await bot.process_commands(message)
+
+@bot.event
+async def on_raw_reaction_add(payload):
+    if payload.author.bot:
+        return
+    SetUp.give_role(payload)
+
+@bot.event
+async def on_raw_reaction_remove(payload):
+    if payload.author.bot:
+        return
+    SetUp.remove_role(payload)
+    
+    
 
 
 async def load_cogs():
