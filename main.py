@@ -3,7 +3,6 @@ from discord import app_commands
 from dotenv import load_dotenv
 from discord.ext import commands
 import os
-from cogs.setup import SetUp
 # local imports
 import level
 
@@ -39,17 +38,7 @@ async def on_message(message):
     level.onLevel(message, userID, username)
     await bot.process_commands(message)
 
-@bot.event
-async def on_raw_reaction_add(payload):
-    if payload.author.bot:
-        return
-    SetUp.give_role(payload)
 
-@bot.event
-async def on_raw_reaction_remove(payload):
-    if payload.author.bot:
-        return
-    SetUp.remove_role(payload)
     
     
 

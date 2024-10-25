@@ -5,6 +5,17 @@ from discord import app_commands
 class SetUp(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        @bot.event
+        async def on_raw_reaction_add(self, payload):
+            if payload.author.bot:
+                return
+            SetUp.give_role(payload)
+
+        @bot.event
+        async def on_raw_reaction_remove(self, payload):
+            if payload.author.bot:
+                return
+            SetUp.remove_role(payload)
        
         with open("storage/reaction_roles.json", "r") as file:
             try:
@@ -12,7 +23,7 @@ class SetUp(commands.Cog):
             except :
                 self.reaction_roles = {}
 
-    @app_command.command(name="role_interactions", description="add role interactions to a message")
+    @app_commands.command(name="role_interactions", description="add role interactions to a message")
     @app_commands.checks.has_permissions(administrator=True)
     async def role_interactions(self, interaction: discord.Interaction, message_id: str, emoji_role_pair:str):
         arg = emoji_role_pair.split()
@@ -45,7 +56,7 @@ class SetUp(commands.Cog):
             emoji_role_pairs = self.reaction_roles[message_id]
             for emoji, role in emoji_role_pairs.items():
                 if emoji in payload.emoji.name:
-                    await payload.member.add_roles(role)
+                    payload.member.add_roles(role)
                     return
 
     def remove_role(self, payload):
@@ -54,9 +65,9 @@ class SetUp(commands.Cog):
             emoji_role_pairs = self.reaction_roles[message_id]
             for emoji, role in emoji_role_pairs.items():
                 if emoji in payload.emoji.name:
-                    await payload.member.remove_roles(role)
+                    payload.member.remove_roles(role)
                     return
-
+    
 
 
 def save_reaction_roles():
