@@ -22,3 +22,13 @@ async def handle_missing_arg(ctx, error):
     """Handle missing argument error for traditional commands."""
     if isinstance(error, commands.MissingRequiredArgument):
         await ctx.send(f"missing argument : '{error.param.name}'")
+
+async def send_log(bot, message, channel_id):
+    if channel_id == -1 :
+        print("missconfig log channel.")
+        return
+    channel = bot.get_channel(channel_id)
+    if channel is None:
+        print("missconfig log channel (inexistante).")
+        return
+    await channel.send(message)

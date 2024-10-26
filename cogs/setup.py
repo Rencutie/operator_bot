@@ -2,6 +2,11 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import json
+
+from error_handling import send_log
+
+
+
 class SetUp(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -11,19 +16,63 @@ class SetUp(commands.Cog):
                 self.reaction_roles = json.load(file)
             except :
                 self.reaction_roles = {}
+        with open("storage/config.json", "r") as file:
+            try:
+                self.config = json.load(file)
+            except :
+                printf("Error loading config.json")
+        self.log_channel_id = self.config.get("channel", {}).get("log_channel_id", -1)
+        self.welcome_channel_id = self.config.get("channel", {}).get("welcome_channel_id", -1)
+        self.byebye_channel_id = self.config.get("channel", {}).get("byebye_channel_id", -1)
 
 
-    @commands.Cog.listener() 
+    @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        if payload.user_id == self.bot.user.id:  # Ignore bot's own reactions
+        if payload.user_id == self.bot.user.id:
             return
         await self.give_role(payload)
 
     @commands.Cog.listener() 
     async def on_raw_reaction_remove(self, payload):
-        if payload.user_id == self.bot.user.id:  # Ignore bot's own reactions
+        if payload.user_id == self.bot.user.id: 
             return
         await self.remove_role(payload)
+
+    @commands.Cog.listener() 
+    async def on_member_join(self, member):
+        await self.send_welcome_message(member, self.welcome_channel_id)
+
+    @commands.Cog.listener()
+    async def on_raw_member_leave(self, member):
+        await self.send_byebye_message(member, self.byebye_channel_id)
+    
+    
+
+    @app_commands.command(name="set_log_channel", description="Set the log channel (admin only)")
+    @app_commands.checks.has_permissions(administrator=True)
+    async def set_log_channel(self, interaction: discord.Interaction, channel : discord.TextChannel):
+        self.config["channel"]["log_channel_id"] = channel.id
+        save_config(self.config, "storage/config.json")
+        await send_log(self.bot, "Log channel set to: " + channel.mention, self.log_channel_id)
+        await interaction.response.send_message("set log channel to" + channel.mention)
+
+
+    @app_commands.command(name="set_welcome_channel", description="Set the welcome channel (admin only)")
+    @app_commands.checks.has_permissions(administrator=True)
+    async def set_welcome_channel(self, interaction: discord.Interaction, channel : discord.TextChannel):
+        self.config["channel"]["welcome_channel_id"] = channel.id
+        save_config(self.config, "storage/config.json")
+        await send_log(self.bot, "Welcome channel set to: " + channel.mention, self.log_channel_id)
+        await interaction.response.send_message("set welcome channel to" + channel.mention)
+
+
+    @app_commands.command(name="set_byebye_channel", description="Set the byebye channel (admin only)")
+    @app_commands.checks.has_permissions(administrator=True)
+    async def set_byebye_channel(self, interaction: discord.Interaction, channel : discord.TextChannel):
+        self.config["channel"]["byebye_channel_id"] = channel.id
+        save_config(self.config, "storage/config.json")
+        await send_log(self.bot, "Byebye channel set to: " + channel.mention, self.log_channel_id)
+        await interaction.response.send_message("set byebye channel to" + channel.mention)
 
 
     @app_commands.command(name="role_interactions", description="Add role interactions to a message (admin only)")
@@ -63,10 +112,11 @@ class SetUp(commands.Cog):
             await message.add_reaction(emoji)
 
         self.reaction_roles[message_id] = emoji_role_map
-        save_reaction_roles(self.reaction_roles)  # Save role IDs instead of Role objects
+        save_config(self.reaction_roles, "storage/reaction_roles.json")  # Save role IDs instead of Role objects
 
         await interaction.response.send_message(f"Successfully set up role interactions for message {message_id}.", ephemeral=True)
 
+    
 
 
     async def give_role(self, payload):
@@ -95,15 +145,35 @@ class SetUp(commands.Cog):
                         role = guild.get_role(role_id)  # Fetch the Role object
                         if role:  # Ensure role exists
                             await member.remove_roles(role)
-                            print(f"Removed role {role.name} from {member.name}.")
-
-    
+                            self.send_log(f"Removed role {role.name} from {member.name}.", self.log_channel_id)
 
 
-def save_reaction_roles(reaction_roles):
-    print(f"Saving reaction roles: {reaction_roles}")  # Debugging purposes
-    with open("storage/reaction_roles.json", "w") as file:
-        json.dump(reaction_roles, file)
+    async def send_welcome_message(self, member, channel_id):
+        if channel_id == -1 :
+            await self.send_log("welcome message not configured.", self.log_channel_id)
+            return
+
+        channel = self.bot.get_channel(channel_id)
+        if channel is None:
+            await self.send_log("channel to send welcome message does not exist.", self.log_channel_id)
+            return
+
+
+    async def send_byebye_message(self, member, channel_id):
+        if channel_id == -1 :
+            await self.send_log("bye message not configured.", self.log_channel_id)
+            return
+        channel = self.bot.get_channel(channel_id)
+        if channel is None:
+            await self.send_log("channel to send bye messages does not exist.", self.log_channel_id)
+            return
+
+            
+
+
+def save_config(dict, file_path: str):
+    with open(file_path, "w") as file:
+        json.dump(dict, file)
 
 async def setup(bot):
     await bot.add_cog(SetUp(bot))

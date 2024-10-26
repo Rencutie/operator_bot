@@ -63,20 +63,22 @@ class LvlCmd(commands.Cog):
     @app_commands.checks.has_permissions(administrator=True)
     async def slash_addExp(self, interaction: discord.Interaction, member: discord.Member, amount: int):
         if member == None:
-            await interaction.response.send_message("You need to specify a member to add experience points to.")
+            await interaction.response.send_message("You need to specify a member to add experience points to.", ephemeral=True)
             return
         if amount < 1:
-            await interaction.response.send_message("You need to specify a positive amount of experience points to add.")
+            await interaction.response.send_message("You need to specify a positive amount of experience points to add.", ephemeral=True)
             return
         userID = str(member.id)
         dataDict = level.loadData()
 
         if userID not in dataDict:
+            await send_log(self.bot, f"{interaction.user.name} tried to add exp to {member.name} but {member.name} does not exist in the database. Creating a new entry.")
             await interaction.response.send_message(f"{member.mention} does not exist in the database. Creating a new entry.")
             level.createUser(dataDict, userID, member.name)
 
         current_level, current_exp = self.add_exp_logic(dataDict, userID, amount)
         level.saveData(dataDict)
+        await send_log(self.bot, f"{interaction.user.name} added {amount} exp to {member.name}. New Level: {current_level}, New EXP: {current_exp}")
         await interaction.response.send_message(f"Added {amount} EXP to {member.mention}.\nNew Level: {current_level}\nNew EXP: {current_exp}")
 
     def add_exp_logic(self, dataDict, userID, amount):
@@ -125,14 +127,15 @@ class LvlCmd(commands.Cog):
     @app_commands.checks.has_permissions(administrator=True)
     async def slash_setLvl(self, interaction:discord.Interaction, member: discord.Member, lvl:int):
         if lvl < 1:
-            await interaction.response.send_message("Cannot set level below 1.")
+            await interaction.response.send_message("Cannot set level below 1.", ephemeral=True)
             return
         if lvl > 100:
-            await interaction.response.send_message("Cannot set level above 100.")
+            await interaction.response.send_message("Cannot set level above 100.", ephemeral=True)
             return
         userID= str(member.id)
         dataDict = level.loadData()
         if userID not in dataDict:
+            await send_log(self.bot, f"{interaction.user.name} tried to set level to {member.name} but {member.name} does not exist in the database. Creating {member.mention}")
             await interaction.response.send_message(f"{member.mention} does not exist in the database, creating {member.mention}")
             level.createUser(dataDict, userID, member.name)
 
@@ -140,6 +143,7 @@ class LvlCmd(commands.Cog):
         dataDict[userID]['level'] = lvl
         dataDict[userID]['exp'] = 0
         level.saveData(dataDict)
+        await send_log(self.bot, f"{interaction.user.name} set level to {member.name} to {lvl}; experiance set to 0")
         await interaction.response.send_message(f"Set {member.mention} level to {lvl}; experiance set to 0\nWas level {initLvl}")
     
 
@@ -170,6 +174,7 @@ class LvlCmd(commands.Cog):
         userID = str(member.id)
         dataDict = level.loadData()
         if userID not in dataDict:
+            await send_log(self.bot, f"{interaction.user.name} tried to remove exp to {member.name} but {member.name} does not exist in the database.")
             await interaction.response.send_message(f"{member.mention} does not exist in database, you cannot remove them exp as they have none.")
             return
         current_lvl, current_exp = self.rmExp_logic(dataDict, userID, amount)
@@ -177,6 +182,7 @@ class LvlCmd(commands.Cog):
         dataDict[userID]['level'] = current_lvl
         dataDict[userID]['exp'] = current_exp
         level.saveData(dataDict)
+        await send_log(self.bot, f"{interaction.user.name} removed {amount} exp to {member.name} ")
         await interaction.response.send_message(f"Removed experience points from {member.mention}. They are now at level {current_lvl} with {current_exp} exp.")
 
 
