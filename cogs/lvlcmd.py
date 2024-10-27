@@ -3,10 +3,14 @@ from discord.ext import commands
 from discord import app_commands
 import level
 from error_handling import *
+import json
 
 class LvlCmd(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        with open('storage/config.json', 'r') as f:
+            self.config = json.load(f)
+        self.log_channel_id = self.config["channel"]['log_channel_id']
     
     @commands.command(name="lvl")
     async def lvl(self, ctx, member: discord.Member = None):
@@ -72,13 +76,13 @@ class LvlCmd(commands.Cog):
         dataDict = level.loadData()
 
         if userID not in dataDict:
-            await send_log(self.bot, f"{interaction.user.name} tried to add exp to {member.name} but {member.name} does not exist in the database. Creating a new entry.")
+            await send_log(self.bot, f"{interaction.user.name} tried to add exp to {member.name} but {member.name} does not exist in the database. Creating a new entry.", self.log_channel_id)
             await interaction.response.send_message(f"{member.mention} does not exist in the database. Creating a new entry.")
             level.createUser(dataDict, userID, member.name)
 
         current_level, current_exp = self.add_exp_logic(dataDict, userID, amount)
         level.saveData(dataDict)
-        await send_log(self.bot, f"{interaction.user.name} added {amount} exp to {member.name}. New Level: {current_level}, New EXP: {current_exp}")
+        await send_log(self.bot, f"{interaction.user.name} added {amount} exp to {member.name}. New Level: {current_level}, New EXP: {current_exp}", self.log_channel_id)
         await interaction.response.send_message(f"Added {amount} EXP to {member.mention}.\nNew Level: {current_level}\nNew EXP: {current_exp}")
 
     def add_exp_logic(self, dataDict, userID, amount):
@@ -135,16 +139,15 @@ class LvlCmd(commands.Cog):
         userID= str(member.id)
         dataDict = level.loadData()
         if userID not in dataDict:
-            await send_log(self.bot, f"{interaction.user.name} tried to set level to {member.name} but {member.name} does not exist in the database. Creating {member.mention}")
-            await interaction.response.send_message(f"{member.mention} does not exist in the database, creating {member.mention}")
+            await send_log(self.bot, f"{interaction.user.name} tried to set level to {member.name} but {member.name} does not exist in the database. Creating {member.mention}", self.log_channel_id)
             level.createUser(dataDict, userID, member.name)
 
         initLvl = dataDict[userID]['level']
         dataDict[userID]['level'] = lvl
         dataDict[userID]['exp'] = 0
         level.saveData(dataDict)
-        await send_log(self.bot, f"{interaction.user.name} set level to {member.name} to {lvl}; experiance set to 0")
-        await interaction.response.send_message(f"Set {member.mention} level to {lvl}; experiance set to 0\nWas level {initLvl}")
+        await send_log(self.bot, f"{interaction.user.name} set level to {member.name} to {lvl}; experiance set to 0", self.log_channel_id )
+        await interaction.response.send_message(f"{member.mention} did not exist in the database, created {member.mention} at level {lvl}")
     
 
     @commands.command(name="rmexp")
@@ -174,7 +177,7 @@ class LvlCmd(commands.Cog):
         userID = str(member.id)
         dataDict = level.loadData()
         if userID not in dataDict:
-            await send_log(self.bot, f"{interaction.user.name} tried to remove exp to {member.name} but {member.name} does not exist in the database.")
+            await send_log(self.bot, f"{interaction.user.name} tried to remove exp to {member.name} but {member.name} does not exist in the database.", self.log_channel_id)
             await interaction.response.send_message(f"{member.mention} does not exist in database, you cannot remove them exp as they have none.")
             return
         current_lvl, current_exp = self.rmExp_logic(dataDict, userID, amount)
@@ -182,7 +185,7 @@ class LvlCmd(commands.Cog):
         dataDict[userID]['level'] = current_lvl
         dataDict[userID]['exp'] = current_exp
         level.saveData(dataDict)
-        await send_log(self.bot, f"{interaction.user.name} removed {amount} exp to {member.name} ")
+        await send_log(self.bot, f"{interaction.user.name} removed {amount} exp to {member.name} ", self.log_channel_id)
         await interaction.response.send_message(f"Removed experience points from {member.mention}. They are now at level {current_lvl} with {current_exp} exp.")
 
 
@@ -207,12 +210,7 @@ class LvlCmd(commands.Cog):
 
     # @app_commands.command(name="leaderboard", description="Shows the top 10 users with the highest levels")
     # async def slash_leaderboard(self, interaction: discord.Interaction):
-    #     dataDict = level.loadData()
-    #     sorted_data = sorted(dataDict.items(), key=lambda x: x[1]['level'], reverse=True)
-    #     leaderboard = []
-    #     for i, (userID, data) in enumerate(sorted_data[:10], start=1):
-    #         member = await ctx.guild.fetch_member(int(userID))
-    #         leaderboard.append(f"{i}. {member.display_name} - Level: {data['level']}")
+
 
 
 

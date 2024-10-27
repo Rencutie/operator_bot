@@ -131,7 +131,7 @@ class SetUp(commands.Cog):
                         role = guild.get_role(role_id)  # Fetch the Role object
                         if role:  # Ensure role exists
                             await member.add_roles(role)
-                            print(f"Added role {role.name} to {member.name}.")
+                            await send_log(self.bot, f"Added role {role.name} to {member.name}.", self.log_channel_id)
 
     async def remove_role(self, payload):
         message_id = str(payload.message_id)
@@ -145,18 +145,19 @@ class SetUp(commands.Cog):
                         role = guild.get_role(role_id)  # Fetch the Role object
                         if role:  # Ensure role exists
                             await member.remove_roles(role)
-                            self.send_log(f"Removed role {role.name} from {member.name}.", self.log_channel_id)
+                            await send_log(self.bot, f"Removed role {role.name} from {member.name}.", self.log_channel_id)
 
 
     async def send_welcome_message(self, member, channel_id):
         if channel_id == -1 :
-            await self.send_log("welcome message not configured.", self.log_channel_id)
+            await self.send_log(self.bot, "welcome message not configured.", self.log_channel_id)
             return
 
         channel = self.bot.get_channel(channel_id)
         if channel is None:
-            await self.send_log("channel to send welcome message does not exist.", self.log_channel_id)
+            await self.send_log(self.bot, "channel to send welcome message does not exist.", self.log_channel_id)
             return
+        await channel.send(f"Welcome to the server, {member.mention}! pass by taking your roles and check the rules")
 
 
     async def send_byebye_message(self, member, channel_id):
@@ -167,6 +168,7 @@ class SetUp(commands.Cog):
         if channel is None:
             await self.send_log("channel to send bye messages does not exist.", self.log_channel_id)
             return
+        await channel.send(f"Goodbye, {member.mention}! We hope never to see you anytime soon.")
 
             
 
