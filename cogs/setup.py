@@ -171,6 +171,7 @@ class SetUp(commands.Cog):
             await self.send_log("channel to send bye messages does not exist.", self.log_channel_id)
             return
         embed = discord.Embed(title=f"we hope never to see you again {member.name}", description=f"left on {member.created_at.strftime('%d/%m/%Y')}", color=discord.Color.red())
+        embed.set_image(url=member.display_avatar.url)
         await channel.send(embed=embed)
 
             
