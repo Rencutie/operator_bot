@@ -20,9 +20,10 @@ class General(commands.Cog):
         embed = discord.Embed(title="Help", description="List of available commands", color=discord.Color.blue())
         #set the bot's avatar as the embed's thumbnail
         embed.set_thumbnail(url=self.bot.user.avatar.url if self.bot.user.avatar else None)
+        
         for cmd in self.bot.tree.walk_commands():
-            embed.add_field(name=f"**/{cmd.name}**", value=f"__{cmd.description}__", inline=False)
-
+            embed.add_field(name=f"**/{cmd.name}**", value=f"> {cmd.description}", inline=False)
+        embed.set_image(url="https://cdn.discordapp.com/attachments/1299461270914863125/1304133666309541971/bannerBot.jpg?ex=672e489f&is=672cf71f&hm=ec5c4a6a232c6f3c73691c217cbf736cb3ba52cd83281d6af72fc96918d1d103&") #banner
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name="profile", description="show a user's profile")
