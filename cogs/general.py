@@ -41,7 +41,7 @@ class General(commands.Cog):
             Level = 1
         embed.add_field(name="level : ", value=Level)
         embed.add_field(name="experience: ", value=f"{exp} / {xp_requirements[Level]}")
-        embed.add_field(name="joind at : ", value=f"{member.joined_at.strftime("%B %d, %Y")}")
+        embed.add_field(name="joind at : ", value=member.joined_at.strftime("%B %d, %Y"))
         await interaction.response.send_message(embed=embed)
 
 async def setup(bot):

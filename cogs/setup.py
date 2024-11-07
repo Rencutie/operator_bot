@@ -158,7 +158,7 @@ class SetUp(commands.Cog):
             await self.send_log(self.bot, "channel to send welcome message does not exist.", self.log_channel_id)
             return
         embed = discord.Embed(title=f"Welcome {member.name}", description=f"joined on {member.created_at.strftime('%d/%m/%Y')}", color=discord.Color.green())
-        embed.image(url=member.display_avatar.url)
+        embed.set_image(url=member.display_avatar.url)
         await channel.send(embed=embed)
 
 
