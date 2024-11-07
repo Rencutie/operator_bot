@@ -206,7 +206,7 @@ class LvlCmd(commands.Cog):
                 amount = 0
         return current_lvl, current_exp
 
-    # to be done in the future :
+    # TODO in the future :
 
     # @app_commands.command(name="leaderboard", description="Shows the top 10 users with the highest levels")
     # async def slash_leaderboard(self, interaction: discord.Interaction):
