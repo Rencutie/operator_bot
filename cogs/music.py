@@ -71,6 +71,8 @@ class Music(commands.Cog):
         except Exception as e:
             print(f"Error fetching metadata: {e}")
             return 'Unknown Title', None  # Return defaults if fetching fails
+
+
     @app_commands.command(name="join", description="Join a voice channel the user is in")
     async def slash_join(self, interaction: discord.Interaction):
         if interaction.user.voice and interaction.user.voice.channel:
@@ -87,8 +89,9 @@ class Music(commands.Cog):
 
     @app_commands.command(name="add_queue", description="add a song from a youtube url to the music queue")
     async def add_queue(self, interaction: discord.Interaction, url: str):
+        await interaction.response.defer()
         if self.voice_client is None:
-            await interaction.response.send_message("The bot is not connected to any voice channel.", ephemeral=True)
+            await interaction.edit_original_response(content="The bot is not connected to any voice channel.")
             return
 
         if interaction.user.voice and interaction.user.voice.channel == self.voice_client.channel:
@@ -96,17 +99,16 @@ class Music(commands.Cog):
             try:
                 title, audio_url = await self.fetch_metadata(url)
             except Exception as e:
-                await interaction.response.send_message(f"Failed to get audio source for {url}.\nPlease ensure you entered a Youtube or Soundcloud URL")
-                print(e)
+                await interaction.edit_original_response(content=f"Failed to get audio source for {url}.\nPlease ensure you entered a Youtube or Soundcloud URL")
                 return
             self.music_queue.append((title, url))
-            await interaction.response.send_message(f"Added {title} to the music queue.")
+            await interaction.edit_original_response(content=f"Added {title} to the music queue.")
             
             # Check if the bot is not currently playing music
             if not self.voice_client.is_playing():
                 await self.play_music()  # Await the play_music coroutine
         else:
-            await interaction.response.send_message("You need to be in the same voice channel as the bot to use this command.", ephemeral=True)
+            await interaction.edit_original_response(content="You need to be in the same voice channel as the bot to use this command.", ephemeral=True)
     
     @app_commands.command(name="add_playlist", description="add an entire playlist to the music queue")
     async def add_playlist(self, interaction: discord.Interaction, url: str):
@@ -126,6 +128,11 @@ class Music(commands.Cog):
                         print(f"Failed to get audio source for {song_url}. Skipping...")
                         continue
                     self.music_queue.append((title, url))
+                    # start music if not ongoing already
+                    # placed here cause it might be really long to laod
+                    # a big playlist
+                    if not self.voice_client.is_playing():
+                        await self.play_music() 
                 await interaction.edit_original_response(content=f"Added {len(list_url)} songs to the music queue.")
 
             except Exception as e:  
@@ -133,9 +140,7 @@ class Music(commands.Cog):
                 await interaction.edit_original_response(
                     content=f"Failed to get audio sources for {url}. Please ensure it's a valid YouTube playlist URL.")
                 return
-            # start music if not ongoing already
-            if not self.voice_client.is_playing():
-                await self.play_music() 
+
 
 
 
@@ -228,7 +233,7 @@ class Music(commands.Cog):
 
             # Check if audio_url is valid
             if audio_url is None:
-                print(f"Error: No audio URL found for {title}")
+                send_log(self.bot, f"error getting audio url for {title}", self.log_channel_id)
                 await self.play_music()  # Try the next song in the queue
                 return
 

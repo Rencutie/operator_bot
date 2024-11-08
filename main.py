@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from discord.ext import commands
 import os
 import json
+import sys
 
 # local imports
 import level
@@ -27,12 +28,16 @@ log_channel_id = config.get('channel').get('log_channel_id')
 # for slash commands
 @bot.event
 async def on_ready():
+    print("--------------------------------", file=sys.stderr)
+    print(f"Logged in as {bot.user.name}", file=sys.stderr)
+    print("--------------------------------", file=sys.stderr)
     await send_log(bot, 'Bot started', log_channel_id)
     await load_cogs()
     try:
         synced = await bot.tree.sync()  # Sync commands with Discord
         await send_log(bot,f'Successfully synced {len(synced)} commands', log_channel_id)
-        print('a')
+        print(f"Synced {len(synced)} commands", file=sys.stderr)
+
     except Exception as e:
         await send_log(bot, f'Error syncing commands: {e}', log_channel_id)
 

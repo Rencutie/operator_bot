@@ -48,7 +48,7 @@ class Moderation(commands.Cog):
         await send_log(self.bot, f"{member.name}'s sentence to the grave has ended.", self.log_channel_id)
     
 
-    @app_commands.command(name="purge", description="delete messages")
+    @app_commands.command(name="purge", description="delete messages (moderators only)")
     @app_commands.checks.has_permissions(manage_messages=True)
     async def slash_purge(self, interaction: discord.Interaction, count: int):
         if count < 1 or count > 100:
