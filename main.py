@@ -13,7 +13,9 @@ load_dotenv()
 
 # Load your bot token from environment variables
 TOKEN = os.getenv('DISCORD_TOKEN')
-
+print("--------------------------------", sys.stderr)
+print("starting bot. . .", sys.stderr)
+print("--------------------------------", sys.stderr)
 # Set up the bot
 intents = discord.Intents.all()
 intents.message_content = True
