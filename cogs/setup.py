@@ -157,7 +157,7 @@ class SetUp(commands.Cog):
         if channel is None:
             await self.send_log(self.bot, "channel to send welcome message does not exist.", self.log_channel_id)
             return
-        embed = discord.Embed(title=f"Welcome {member.name}", description=f"joined on {member.created_at.strftime('%d/%m/%Y')}", color=discord.Color.green())
+        embed = discord.Embed(title=f"Welcome {member.name}", description=f"joined on {member.joined_at.strftime('%d/%m/%Y')}", color=discord.Color.green())
         embed.set_image(url=member.display_avatar.url)
         await channel.send(embed=embed)
 
@@ -170,7 +170,7 @@ class SetUp(commands.Cog):
         if channel is None:
             await self.send_log("channel to send bye messages does not exist.", self.log_channel_id)
             return
-        embed = discord.Embed(title=f"we hope never to see you again {member.name}", description=f"left on {member.created_at.strftime('%d/%m/%Y')}", color=discord.Color.red())
+        embed = discord.Embed(title=f"we hope never to see you again {member.name}", description=f"joined on {member.joined_at.strftime('%d/%m/%Y')}", color=discord.Color.red())
         embed.set_image(url=member.display_avatar.url)
         await channel.send(embed=embed)
 

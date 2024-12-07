@@ -27,9 +27,7 @@ class General(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name="profile", description="show a user's profile")
-    async def slash_profile(self, interaction: discord.Interaction, member: discord.Member = None):
-        if member == None:
-            member = interaction.user
+    async def slash_profile(self, interaction: discord.Interaction, member: discord.Member):
         embed = discord.Embed(title=f"{member.name}'s Profile", description=f"Created: {member.created_at.strftime('%d/%m/%Y')}", color=discord.Color.blue())
         embed.set_thumbnail(url=member.display_avatar.url)
         dataDict = loadData()
