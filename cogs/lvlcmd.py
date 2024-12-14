@@ -23,7 +23,7 @@ class LvlCmd(commands.Cog):
             return
         current_lvl = dataDict[userID]['level']
         current_exp = dataDict[userID]['exp']
-        await ctx.send(f"{member.name}, your current level is {dataDict[userID]['level']}\nYour current exp is {dataDict[userID]['exp']} out of {level.xp_requirements[dataDict[userID]['level']]} required to level up.")
+        await ctx.send(f"{member.name}, your current level is {current_lvl}\nYour current exp is {current_exp} out of {level.xp_requirements[current_lvl]} required to level up.")
 
 
 
