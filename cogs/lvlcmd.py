@@ -12,25 +12,9 @@ class LvlCmd(commands.Cog):
             self.config = json.load(f)
         self.log_channel_id = self.config["channel"]['log_channel_id']
     
-    @commands.command(name="lvl")
-    async def lvl(self, ctx, member: discord.Member = None):
-        if member == None :
-            member = ctx.author
-        userID = str(member.id)
-        dataDict = level.loadData()
-        if userID not in dataDict:
-            await ctx.send(f"{member.mention} is not in the database.\nPrehaps they never sent a message")
-            return
-        current_lvl = dataDict[userID]['level']
-        current_exp = dataDict[userID]['exp']
-        await ctx.send(f"{member.name}, your current level is {current_lvl}\nYour current exp is {current_exp} out of {level.xp_requirements[current_lvl]} required to level up.")
-
-
 
     @app_commands.command(name ="lvl", description="show a user's level. Show self if no user is given")
-    async def slash_lvl(self, interaction:discord.Interaction, member: discord.Member = None):
-        if member == None :
-            member = interaction.user
+    async def slash_lvl(self, interaction:discord.Interaction, member: discord.Member):
         userID = str(member.id)
         dataDict = level.loadData()
         
@@ -42,33 +26,12 @@ class LvlCmd(commands.Cog):
 
     
 
-    @commands.command(name="addexp")
-    @commands.has_permissions(administrator=True)
-    async def addExp(self, ctx, member: discord.Member, amount:int = -1):
-        if member == None:
-            await ctx.send("You need to specify a member to add experience points to.")
-            return
-        if amount < 1:
-            await ctx.send("You need to specify a positive amount of experience points to add.")
-            return
-        userID = str(member.id)
-        dataDict = level.loadData()
 
-        if userID not in dataDict:
-            await ctx.send(f"{member.mention} does not exist in the database. Creating a new entry.")
-            level.createUser(dataDict, userID, member.name)
-
-        current_level, current_exp = self.add_exp_logic(dataDict, userID, amount)
-        level.saveData(dataDict)
-        await ctx.send(f"Added {amount} EXP to {member.mention}.\nNew Level: {current_level}\nNew EXP: {current_exp}")
 
     # Slash command version of adding experience points
     @app_commands.command(name="addexp", description="Add experience points to a user. (admin only)")
     @app_commands.checks.has_permissions(administrator=True)
     async def slash_addExp(self, interaction: discord.Interaction, member: discord.Member, amount: int):
-        if member == None:
-            await interaction.response.send_message("You need to specify a member to add experience points to.", ephemeral=True)
-            return
         if amount < 1:
             await interaction.response.send_message("You need to specify a positive amount of experience points to add.", ephemeral=True)
             return
@@ -77,7 +40,6 @@ class LvlCmd(commands.Cog):
 
         if userID not in dataDict:
             await send_log(self.bot, f"{interaction.user.name} tried to add exp to {member.name} but {member.name} does not exist in the database. Creating a new entry.", self.log_channel_id)
-            await interaction.response.send_message(f"{member.mention} does not exist in the database. Creating a new entry.")
             level.createUser(dataDict, userID, member.name)
 
         current_level, current_exp = self.add_exp_logic(dataDict, userID, amount)
@@ -106,25 +68,6 @@ class LvlCmd(commands.Cog):
         return current_level, current_exp
 
 
-    @commands.command(name="setlevel")
-    @commands.has_permissions(administrator=True)
-    async def setLvl(self, ctx, member: discord.Member, lvl:int):
-        if lvl < 1:
-            await ctx.send("Cannot set level below 1.")
-            return
-        if lvl > 100:
-            await ctx.send("Cannot set level above 100.")
-            return
-        userID= str(member.id)
-        dataDict = level.loadData()
-        if userID not in dataDict:
-            await ctx.send (f"{member.mention} does not exist in the database, creating {member.mention}")
-            level.createUser(dataDict, userID, member.name)
-        initLvl = dataDict[userID]['level']
-        dataDict[userID]['level'] = lvl
-        dataDict[userID]['exp'] = 0
-        level.saveData(dataDict)
-        await ctx.send(f"Set {member.mention} level to {lvl}; experiance set to 0\nWas level {initLvl}")
 
 
     @app_commands.command(name="setlvl", description="set a user's level to a given number (admin only)")
@@ -150,23 +93,7 @@ class LvlCmd(commands.Cog):
         await interaction.response.send_message(f"{member.mention} did not exist in the database, created {member.mention} at level {lvl}")
     
 
-    @commands.command(name="rmexp")
-    @commands.has_permissions(administrator=True)
-    async def rmExp(self, ctx, member: discord.Member, amount:int):
-        if amount < 1:
-            await ctx.send("Cannot remove less than 1 exp.")
-            return
-        userID = str(member.id)
-        dataDict = level.loadData()
-        if userID not in dataDict:
-            await ctx.send(f"{member.mention} does not exist in database, you cannot remove them exp as they have none.")
-            return
-        current_lvl, current_exp = self.rmExp_logic(dataDict, userID, amount)
-        dataDict[userID]['level'] = current_lvl
-        dataDict[userID]['exp'] = current_exp
-        level.saveData(dataDict)
-        await ctx.send(f"Removed experience points from {member.mention}. They are now at level {current_lvl} with {current_exp} exp.")
-
+    
     
     @app_commands.command(name="removeexp", description="remove a said amount of exp to a user (admin only)")
     @app_commands.checks.has_permissions(administrator=True)
@@ -206,38 +133,24 @@ class LvlCmd(commands.Cog):
                 amount = 0
         return current_lvl, current_exp
 
-    # TODO in the future :
-
-    # @app_commands.command(name="leaderboard", description="Shows the top 10 users with the highest levels")
-    # async def slash_leaderboard(self, interaction: discord.Interaction):
-
-
-
-
-    @lvl.error
-    async def lvl_error(self, ctx, error):
-        await handle_member_not_found(ctx, error)
-
-
-    @addExp.error
-    async def addExp_error(self, ctx, error):
-        await handle_member_not_found(ctx, error)
-        await handle_missing_permissions(ctx, error)
-        await handle_missing_arg(ctx, error)
-
-
-    @rmExp.error
-    async def rmExp_error(self, ctx, error):
-        await handle_member_not_found(ctx, error)
-        await handle_missing_permissions(ctx, error)
-        await handle_missing_arg(ctx, error)
     
 
-    @setLvl.error
-    async def setLvl_error(self, ctx, error):
-        await handle_member_not_found(ctx, error)
-        await handle_missing_permissions(ctx, error)
-        await handle_missing_arg(ctx, error)
+    @app_commands.command(name="leaderboard", description="Shows the 10 users with the highest levels")
+    async def slash_leaderboard(self, interaction: discord.Interaction):
+        dataDict = level.loadData()
+        sorted_users = sorted(dataDict.items(), key=lambda x: (x[1]['level'], x[1]['exp']), reverse=True)
+        embed = discord.Embed(title="LEADERBOARD", color=discord.Color.blue())
+        for i, (userID, userInfo) in enumerate(sorted_users[:10], start=1):
+            member = await self.bot.fetch_user(int(userID))
+            embed.add_field(name=member.name, value=f"level :{dataDict[int(userID)]['level']}\nexp :{dataDict[int(userID)]['exp']}")
+        await interaction.response.send_message(embed=embed)
+
+
+
+
+
+
+
     
 async def setup(bot):
     await bot.add_cog(LvlCmd(bot))
