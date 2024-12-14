@@ -1,1 +1,5 @@
-discord.py pynacl python-dotenv yt-dlp pytube
+discord.py 
+pynacl 
+python-dotenv 
+yt-dlp
+pytube
