@@ -215,7 +215,7 @@ class Music(commands.Cog):
     async def show_queue(self, interaction: discord.Interaction):
         await interaction.response.defer()
         if self.voice_client is None:
-            await interaction.response.send_message("The bot is not connected to any voice channel.", ephemeral=True)
+            await interaction.followup.send("The bot is not connected to any voice channel.", ephemeral=True)
             return
         embed = discord.Embed(title="Current Queue", color=discord.Color.blue())
         try:

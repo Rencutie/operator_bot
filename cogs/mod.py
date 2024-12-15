@@ -37,9 +37,13 @@ class Moderation(commands.Cog):
         if not duration_min.isdigit():
             await interaction.response.send_message("Please provide a valid duration in minutes.", ephemeral=True)
             return
-        duration = int(duration_min) * 60 #in seconds
         
-        await member.add_roles(discord.utils.get(self.bot.guilds[0].roles, name="Dead"))
+        duration = int(duration_min) * 60 #in seconds
+        if duration<=0 :
+            await interaction.response.send_message("Time must be strictly positive")
+            return
+        
+        await member.add_roles(discord.utils.get(self.bot.guilds[0].roles, name="ded"))
         await send_log(self.bot, f"{interaction.user.name} have killed {member.name} for {duration // 60} minutes", self.log_channel_id)
         await interaction.response.send_message(f"{member.name} has been sent to the graveyard for the following reason: \n__{reason}__\nThey shall resurrect in {duration // 60} minutes.")
 
