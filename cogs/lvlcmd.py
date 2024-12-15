@@ -14,9 +14,7 @@ class LvlCmd(commands.Cog):
     
 
     @app_commands.command(name ="lvl", description="show a user's level. Show self if no user is given")
-    async def slash_lvl(self, interaction:discord.Interaction, member: discord.Member = None):
-        if member == None :
-            member = interaction.user
+    async def slash_lvl(self, interaction:discord.Interaction, member: discord.Member):
         userID = str(member.id)
         dataDict = level.loadData()
         
@@ -34,9 +32,6 @@ class LvlCmd(commands.Cog):
     @app_commands.command(name="addexp", description="Add experience points to a user. (admin only)")
     @app_commands.checks.has_permissions(administrator=True)
     async def slash_addExp(self, interaction: discord.Interaction, member: discord.Member, amount: int):
-        if member == None:
-            await interaction.response.send_message("You need to specify a member to add experience points to.", ephemeral=True)
-            return
         if amount < 1:
             await interaction.response.send_message("You need to specify a positive amount of experience points to add.", ephemeral=True)
             return
@@ -146,7 +141,7 @@ class LvlCmd(commands.Cog):
         sorted_users = sorted(dataDict.items(), key=lambda x: (x[1]['level'], x[1]['exp']), reverse=True)
         embed = discord.Embed(title="LEADERBOARD", color=discord.Color.blue())
         for i, (userID, userInfo) in enumerate(sorted_users[:10], start=1):
-            member = await bot.fetch_user(int(userID))
+            member = await self.bot.fetch_user(int(userID))
             embed.add_field(name=member.name, value=f"level :{dataDict[int(userID)]['level']}\nexp :{dataDict[int(userID)]['exp']}")
         await interaction.response.send_message(embed=embed)
 
