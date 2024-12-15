@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import level
-from error_handling import *
+from error_handling import send_log 
 import json
 
 class LvlCmd(commands.Cog):
