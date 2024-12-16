@@ -142,7 +142,7 @@ class LvlCmd(commands.Cog):
         embed = discord.Embed(title="LEADERBOARD", color=discord.Color.blue())
         for i, (userID, userInfo) in enumerate(sorted_users[:10], start=1):
             member = await self.bot.fetch_user(int(userID))
-            embed.add_field(name=member.name, value=f"level :{dataDict[int(userID)]['level']}\nexp :{dataDict[int(userID)]['exp']}")
+            embed.add_field(name=member.name, value=f"level : {dataDict[str(userID)]['level']}\nexp : {dataDict[str(userID)]['exp']}")
         await interaction.response.send_message(embed=embed)
 
 

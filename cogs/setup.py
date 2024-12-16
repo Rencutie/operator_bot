@@ -20,7 +20,7 @@ class SetUp(commands.Cog):
             try:
                 self.config = json.load(file)
             except :
-                printf("Error loading config.json")
+                print("Error loading config.json")
         self.log_channel_id = self.config.get("channel", {}).get("log_channel_id", -1)
         self.welcome_channel_id = self.config.get("channel", {}).get("welcome_channel_id", -1)
         self.byebye_channel_id = self.config.get("channel", {}).get("byebye_channel_id", -1)
@@ -129,7 +129,7 @@ class SetUp(commands.Cog):
                     member = guild.get_member(payload.user_id)
                     if member and role_id:
                         role = guild.get_role(role_id)  # Fetch the Role object
-                        if role:  # Ensure role exists
+                        if role:  
                             await member.add_roles(role)
                             await send_log(self.bot, f"Added role {role.name} to {member.name}.", self.log_channel_id)
 
@@ -179,7 +179,7 @@ class SetUp(commands.Cog):
 
 def save_config(dict, file_path: str):
     with open(file_path, "w") as file:
-        json.dump(dict, file)
-
+        json.dump(dict, file, indent=4)
+        
 async def setup(bot):
     await bot.add_cog(SetUp(bot))
