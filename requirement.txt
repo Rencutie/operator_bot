@@ -3,3 +3,4 @@ pynacl
 python-dotenv 
 yt-dlp
 pytube
+audioop-lts
