@@ -48,7 +48,7 @@ class Moderation(commands.Cog):
         await interaction.response.send_message(f"{member.name} has been sent to the graveyard for the following reason: \n__{reason}__\nThey shall resurrect in {duration // 60} minutes.")
 
         await asyncio.sleep(duration)
-        await member.remove_roles(discord.utils.get(self.bot.guilds[0].roles, name="Dead"))
+        await member.remove_roles(discord.utils.get(self.bot.guilds[0].roles, name="ded"))
         await send_log(self.bot, f"{member.name}'s sentence to the grave has ended.", self.log_channel_id)
     
 
@@ -58,16 +58,23 @@ class Moderation(commands.Cog):
         if count < 1 or count > 100:
             await interaction.response.send_message("Please provide a valid count between 1 and 100.", ephemeral=True)
             return
-        await interaction.response.send_message("ok", ephemeral=True)
-        await interaction.channel.purge(limit=count)
-        await send_log(self.bot, f"{interaction.user.name} purged {count} messages in {interaction.channel.name}", self.log_channel_id)
+
+        try :
+            await interaction.response.send_message("ok", ephemeral=True)
+            await interaction.channel.purge(limit=count)
+            await send_log(self.bot, f"{interaction.user.name} purged {count} messages in {interaction.channel.name}", self.log_channel_id)
+        except :
+            await interaction.response.send_message("you can do that here", ephemeral=True)
+        
+
 
     @app_commands.command(name="resurect", description="send a user back from the graveyard (moderators only)")
     @app_commands.checks.has_permissions(kick_members=True)
     async def slash_resurrect(self, interaction: discord.Interaction, member: discord.Member):
-        if not discord.utils.get(member.roles, name="Dead"):
+        if not discord.utils.get(member.roles, name="ded"):
             await interaction.response.send_message(f"{member.name} is not in the graveyard.", ephemeral=True)
-        await member.remove_roles(discord.utils.get(self.bot.guilds[0].roles, name="Dead"))
+            return
+        await member.remove_roles(discord.utils.get(self.bot.guilds[0].roles, name="ded"))
         await send_log(self.bot, f"{interaction.user.name} have resurrected {member.name}", self.log_channel_id)
         await interaction.response.send_message(f"{member.name} has been resurrected from the graveyard.", ephemeral=True)
         
