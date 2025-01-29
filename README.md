@@ -13,7 +13,8 @@ You can use this as an exemple of how to make your own and/or use it as a templa
 - Using command tree for more understandable navigation (/ban -> /moderation ban for exemple)
 
 # TODO :
-- Switching the json storage with an SQLite database
+- Switching the json storage with an SQLite database <br>
+- Support for being on multiple servers independently<br>
 
 # DEPENDENCIES : 
 You can install all required dependencies by typing  
