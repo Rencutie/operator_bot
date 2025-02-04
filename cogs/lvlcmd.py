@@ -13,8 +13,11 @@ class LvlCmd(commands.Cog):
         self.log_channel_id = self.config["channel"]['log_channel_id']
     
 
-    @app_commands.command(name ="lvl", description="show a user's level. Show self if no user is given")
+    @app_commands.command(name ="lvl", description="show a given user's level.")
     async def slash_lvl(self, interaction:discord.Interaction, member: discord.Member):
+        """
+        Usage : /lvl MEMBER
+        """
         userID = str(member.id)
         dataDict = level.loadData()
         
@@ -32,6 +35,12 @@ class LvlCmd(commands.Cog):
     @app_commands.command(name="addexp", description="Add experience points to a user. (admin only)")
     @app_commands.checks.has_permissions(administrator=True)
     async def slash_addExp(self, interaction: discord.Interaction, member: discord.Member, amount: int):
+        """
+        Allow the user to add experience to a given user.
+        Usage : /addexp MEMBER AMOUNT(int).
+        AMOUNT must be greater than 0.
+        TODO : check for float
+        """
         if amount < 1:
             await interaction.response.send_message("You need to specify a positive amount of experience points to add.", ephemeral=True)
             return
@@ -48,6 +57,10 @@ class LvlCmd(commands.Cog):
         await interaction.response.send_message(f"Added {amount} EXP to {member.mention}.\nNew Level: {current_level}\nNew EXP: {current_exp}")
 
     def add_exp_logic(self, dataDict, userID, amount):
+        """
+        This fonction impelement the algorithm behind the addition of exp to ensure propoer leveling up.
+        return: a tuple with the new level and the new exp. if the max level is reached, the exp will keep adding up.
+        """
         current_level = dataDict[userID]['level']
         current_exp = dataDict[userID]['exp'] + amount
         try:
@@ -73,6 +86,11 @@ class LvlCmd(commands.Cog):
     @app_commands.command(name="setlvl", description="set a user's level to a given number (admin only)")
     @app_commands.checks.has_permissions(administrator=True)
     async def slash_setLvl(self, interaction:discord.Interaction, member: discord.Member, lvl:int):
+        """
+        Set a user's level to a given number.
+        USAGE : /setlvl MEMBER LVL(int)
+        LVL must be between 1 and 100
+        """
         if lvl < 1:
             await interaction.response.send_message("Cannot set level below 1.", ephemeral=True)
             return
@@ -98,6 +116,11 @@ class LvlCmd(commands.Cog):
     @app_commands.command(name="removeexp", description="remove a said amount of exp to a user (admin only)")
     @app_commands.checks.has_permissions(administrator=True)
     async def slash_rmExp(self, interaction:discord.Interaction, member:discord.Member, amount:int):
+        """
+        Remove a given amount of exp to a user.
+        USAGE : /removeexp MEMBER AMOUNT(int)
+        AMOUNT must be greater than 1 
+        """
         if amount < 1:
             await interaction.response.send_message("Cannot remove less than 1 exp.")
             return
@@ -117,6 +140,10 @@ class LvlCmd(commands.Cog):
 
 
     def rmExp_logic(self, dataDict, userID, amount):
+        """
+        This algorithm takes care to safely remove the exp to a user, as well as decrementing his level.
+        Will return a tuple with the new level and the new exp
+        """
         current_lvl = dataDict[userID]['level']
         current_exp = dataDict[userID]['exp']
         while amount > 0:
@@ -137,6 +164,11 @@ class LvlCmd(commands.Cog):
 
     @app_commands.command(name="leaderboard", description="Shows the 10 users with the highest levels")
     async def slash_leaderboard(self, interaction: discord.Interaction):
+        """
+        Display the 10 members of the server with the higher levels.
+        USAGE: /leaderboard
+
+        """
         dataDict = level.loadData()
         sorted_users = sorted(dataDict.items(), key=lambda x: (x[1]['level'], x[1]['exp']), reverse=True)
         embed = discord.Embed(title="LEADERBOARD", color=discord.Color.blue())

@@ -1,10 +1,10 @@
-import discord
-from dotenv import load_dotenv
-from discord.ext import commands
 import os
 import json
 import sys
 
+import discord
+from dotenv import load_dotenv
+from discord.ext import commands
 # local imports
 import level
 from error_handling import send_log
@@ -14,7 +14,7 @@ load_dotenv()
 # Load your bot token from environment variables
 TOKEN = os.getenv('DISCORD_TOKEN')
 print("--------------------------------", file=sys.stderr)
-print("starting bot. . .", file=sys.stderr)
+print("starting bot. . .",color="red", file=sys.stderr)
 print("--------------------------------", file=sys.stderr)
 # Set up the bot
 intents = discord.Intents.all()
@@ -30,6 +30,10 @@ log_channel_id = config.get('channel').get('log_channel_id')
 # for slash commands
 @bot.event
 async def on_ready():
+    """
+    Things to be done as soon as the bot starts.
+    It will load commands from 
+    """
     print("--------------------------------", file=sys.stderr)
     print(f"Logged in as {bot.user.name}", file=sys.stderr)
     print("--------------------------------", file=sys.stderr)
@@ -45,14 +49,17 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    if message.author.bot:
+    """
+    Things to do when a message is sent in the server. 
+    Will check for level, and then for textual commands(not / commands).
+    """
+    if message.author.bot: # Do not react to bots messages.
         return
     userID = str(message.author.id) 
     username = message.author.name
     await level.onLevel(message, userID, username)
     await bot.process_commands(message)
 
-    
 
 
 async def load_cogs():

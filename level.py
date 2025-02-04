@@ -86,8 +86,7 @@ def checkLvlUp(dataDict, userID):
 
 def addExperience(dataDict, userID):
     """
-        add a random number between 7 and 13 to the
-        users exp 
+        add a random number between 7 and 13 to the users exp
     """
     dataDict[userID]['exp'] = dataDict[userID]['exp'] + random.randint(7, 13)
 
