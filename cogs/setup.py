@@ -26,6 +26,8 @@ class SetUp(commands.Cog):
         self.byebye_channel_id = self.config.get("channel", {}).get("byebye_channel_id", -1)
 
 
+    setup_group = app_commands.Group(name="setup", description="Commands to setup stuff in the server")
+
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         if payload.user_id == self.bot.user.id:
@@ -48,7 +50,7 @@ class SetUp(commands.Cog):
     
     
 
-    @app_commands.command(name="set_log_channel", description="Set the log channel (admin only)")
+    @setup_group.command(name="set_log_channel", description="Set the log channel (admin only)")
     @app_commands.checks.has_permissions(administrator=True)
     async def set_log_channel(self, interaction: discord.Interaction, channel : discord.TextChannel):
         self.config["channel"]["log_channel_id"] = channel.id
@@ -57,7 +59,7 @@ class SetUp(commands.Cog):
         await interaction.response.send_message("set log channel to" + channel.mention)
 
 
-    @app_commands.command(name="set_welcome_channel", description="Set the welcome channel (admin only)")
+    @setup_group.command(name="set_welcome_channel", description="Set the welcome channel (admin only)")
     @app_commands.checks.has_permissions(administrator=True)
     async def set_welcome_channel(self, interaction: discord.Interaction, channel : discord.TextChannel):
         self.config["channel"]["welcome_channel_id"] = channel.id
@@ -66,7 +68,7 @@ class SetUp(commands.Cog):
         await interaction.response.send_message("set welcome channel to" + channel.mention)
 
 
-    @app_commands.command(name="set_byebye_channel", description="Set the byebye channel (admin only)")
+    @setup_group.command(name="set_byebye_channel", description="Set the byebye channel (admin only)")
     @app_commands.checks.has_permissions(administrator=True)
     async def set_byebye_channel(self, interaction: discord.Interaction, channel : discord.TextChannel):
         self.config["channel"]["byebye_channel_id"] = channel.id
@@ -75,7 +77,7 @@ class SetUp(commands.Cog):
         await interaction.response.send_message("set byebye channel to" + channel.mention)
 
 
-    @app_commands.command(name="role_interactions", description="Add role interactions to a message (admin only)")
+    @setup_group.command(name="role_interactions", description="Add role interactions to a message (admin only)")
     @app_commands.checks.has_permissions(administrator=True)
     async def role_interactions(self, interaction: discord.Interaction, message_id: str, *, emoji_role_pairs: str):
         pairs = emoji_role_pairs.split()
