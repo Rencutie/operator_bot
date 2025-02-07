@@ -24,7 +24,8 @@ class Music(commands.Cog):
         self.voice_client = None
         self.current_track = None
 
-
+    
+    music_group = app_commands.Group(name="music", description="Commands used to play music in vc")
 
     
     async def fetch_metadata(self, video_url):
@@ -51,7 +52,7 @@ class Music(commands.Cog):
             print(f"Error fetching metadata: {e}")
             return 'Unknown Title', None
 
-    @app_commands.command(name="join", description="Join a voice channel the user is in")
+    @music_group.command(name="join", description="Join a voice channel the user is in")
     async def slash_join(self, interaction: discord.Interaction):
         if interaction.user.voice and interaction.user.voice.channel:
             voice_channel = interaction.user.voice.channel
@@ -67,7 +68,7 @@ class Music(commands.Cog):
 
 
 
-    @app_commands.command(name="add_queue", description="add a song from a youtube url to the music queue")
+    @music_group.command(name="add_queue", description="add a song from a youtube url to the music queue")
     async def add_queue(self, interaction: discord.Interaction, url: str):
         await interaction.response.defer()
         if self.voice_client is None:
@@ -92,7 +93,7 @@ class Music(commands.Cog):
     
 
 
-    @app_commands.command(name="add_playlist", description="add an entire playlist to the music queue")
+    @music_group.command(name="add_playlist", description="add an entire playlist to the music queue")
     async def add_playlist(self, interaction: discord.Interaction, url: str):
         await interaction.response.defer()
         if self.voice_client is None:
@@ -127,7 +128,7 @@ class Music(commands.Cog):
 
 
 
-    @app_commands.command(name="skip", description="skips the current song")
+    @music_group.command(name="skip", description="skips the current song")
     async def slash_skip(self, interaction: discord.Interaction):
         if self.voice_client is None:
             await interaction.response.send_message("The bot is not connected to any voice channel.", ephemeral=True)
@@ -144,7 +145,7 @@ class Music(commands.Cog):
 
 
 
-    @app_commands.command(name="pause", description="pause the music")
+    @music_group.command(name="pause", description="pause the music")
     async def pause(self, interaction: discord.Interaction):
         if self.voice_client is None:
             await interaction.response.send_message("The bot is not connected to any voice channel.", ephemeral=True)
@@ -160,7 +161,7 @@ class Music(commands.Cog):
             await interaction.response.send_message("You need to be in the same voice channel as the bot to use this command.", ephemeral=True)
 
 
-    @app_commands.command(name="resume", description="resume the music")
+    @music_group.command(name="resume", description="resume the music")
     async def resume(self, interaction: discord.Interaction):
         if self.voice_client is None:
             await interaction.response.send_message("The bot is not connected to any voice channel.", ephemeral=True)
@@ -176,7 +177,7 @@ class Music(commands.Cog):
             await interaction.response.send_message("You need to be in the same voice channel as the bot to use this command.", ephemeral=True)
 
 
-    @app_commands.command(name="stop", description="stops the current song and clears the queue")
+    @music_group.command(name="stop", description="stops the current song and clears the queue")
     async def slash_stop(self, interaction: discord.Interaction):
         if self.voice_client is None:
             await interaction.response.send_message("The bot is not connected to any voice channel.", ephemeral=True)
@@ -198,7 +199,7 @@ class Music(commands.Cog):
 
 
 
-    @app_commands.command(name="show_queue", description="display the waiting queue")
+    @music_group.command(name="show_queue", description="display the waiting queue")
     async def show_queue(self, interaction: discord.Interaction):
         await interaction.response.defer()
         if self.voice_client is None:
