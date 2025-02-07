@@ -13,8 +13,10 @@ class Moderation(commands.Cog):
             self.config = json.load(file)
         self.log_channel_id = self.config.get("channel", {}).get("log_channel_id", -1)
     
+    
+    mod_group = app_commands.Group(name="mod", description="Moderation related commands")
 
-    @app_commands.command(name="ban", description="self explanatory")
+    @mod_group.command(name="ban", description="self explanatory")
     @app_commands.checks.has_permissions(ban_members=True)
     async def slash_ban(self, interaction: discord.Interaction, member: discord.Member, reason: str):
         """
@@ -27,7 +29,7 @@ class Moderation(commands.Cog):
     
 
 
-    @app_commands.command(name="kick", description="self explanatory")
+    @mod_group.command(name="kick", description="self explanatory")
     @app_commands.checks.has_permissions(kick_members=True)
     async def slash_kick(self, interaction: discord.Interaction, member: discord.Member, reason: str):
         """
@@ -40,7 +42,7 @@ class Moderation(commands.Cog):
         await interaction.response.send_message(f"{member.name} has been kicked for the following reason: \n__{reason}__")
     
 
-    @app_commands.command(name="kill", description="send a user to the graveyard (moderators only)")
+    @mod_group.command(name="kill", description="send a user to the graveyard (moderators only)")
     @app_commands.checks.has_permissions(kick_members=True)
     async def slash_mute(self, interaction: discord.Interaction, member: discord.Member, reason: str, duration_min: str = "5" ):
         """
@@ -69,7 +71,7 @@ class Moderation(commands.Cog):
             send_log(self.bot, "The 'ded' role is required in the server to use this command.\nWe recomend to restrict access to most of the server for this role for this command to make sense.",self.log_channel_id)
     
 
-    @app_commands.command(name="purge", description="delete messages (moderators only)")
+    @mod_group.command(name="purge", description="delete messages (moderators only)")
     @app_commands.checks.has_permissions(manage_messages=True)
     async def slash_purge(self, interaction: discord.Interaction, count: int):
         """
@@ -90,7 +92,7 @@ class Moderation(commands.Cog):
         
 
 
-    @app_commands.command(name="resurect", description="send a user back from the graveyard (moderators only)")
+    @mod_group.command(name="resurect", description="send a user back from the graveyard (moderators only)")
     @app_commands.checks.has_permissions(kick_members=True)
     async def slash_resurrect(self, interaction: discord.Interaction, member: discord.Member):
         """
