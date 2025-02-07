@@ -12,8 +12,9 @@ class LvlCmd(commands.Cog):
             self.config = json.load(f)
         self.log_channel_id = self.config["channel"]['log_channel_id']
     
+    lvl_group = app_commands.Group(name="lvl", description="Commands related to levels")    
 
-    @app_commands.command(name ="lvl", description="show a given user's level.")
+    @lvl_group.command(name ="lvl", description="show a given user's level.")
     async def slash_lvl(self, interaction:discord.Interaction, member: discord.Member):
         """
         Usage : /lvl MEMBER
@@ -32,7 +33,7 @@ class LvlCmd(commands.Cog):
 
 
     # Slash command version of adding experience points
-    @app_commands.command(name="addexp", description="Add experience points to a user. (admin only)")
+    @lvl_group.command(name="addexp", description="Add experience points to a user. (admin only)")
     @app_commands.checks.has_permissions(administrator=True)
     async def slash_addExp(self, interaction: discord.Interaction, member: discord.Member, amount: int):
         """
@@ -83,7 +84,7 @@ class LvlCmd(commands.Cog):
 
 
 
-    @app_commands.command(name="setlvl", description="set a user's level to a given number (admin only)")
+    @lvl_group.command(name="setlvl", description="set a user's level to a given number (admin only)")
     @app_commands.checks.has_permissions(administrator=True)
     async def slash_setLvl(self, interaction:discord.Interaction, member: discord.Member, lvl:int):
         """
@@ -112,7 +113,7 @@ class LvlCmd(commands.Cog):
 
     
     
-    @app_commands.command(name="removeexp", description="remove a said amount of exp to a user (admin only)")
+    @lvl_group.command(name="removeexp", description="remove a said amount of exp to a user (admin only)")
     @app_commands.checks.has_permissions(administrator=True)
     async def slash_rmExp(self, interaction:discord.Interaction, member:discord.Member, amount:int):
         """
@@ -161,7 +162,7 @@ class LvlCmd(commands.Cog):
 
     
 
-    @app_commands.command(name="leaderboard", description="Shows the 10 users with the highest levels")
+    @lvl_group.command(name="leaderboard", description="Shows the 10 users with the highest levels")
     async def slash_leaderboard(self, interaction: discord.Interaction):
         """
         Display the 10 members of the server with the higher levels.
