@@ -103,7 +103,6 @@ class LvlCmd(commands.Cog):
             await send_log(self.bot, f"{interaction.user.name} tried to set level to {member.name} but {member.name} does not exist in the database. Creating {member.mention}", self.log_channel_id)
             level.createUser(dataDict, userID, member.name)
 
-        initLvl = dataDict[userID]['level']
         dataDict[userID]['level'] = lvl
         dataDict[userID]['exp'] = 0
         level.saveData(dataDict)
@@ -172,7 +171,7 @@ class LvlCmd(commands.Cog):
         dataDict = level.loadData()
         sorted_users = sorted(dataDict.items(), key=lambda x: (x[1]['level'], x[1]['exp']), reverse=True)
         embed = discord.Embed(title="LEADERBOARD", color=discord.Color.blue())
-        for i, (userID, userInfo) in enumerate(sorted_users[:10], start=1):
+        for i, (userID, _) in enumerate(sorted_users[:10], start=1):
             member = await self.bot.fetch_user(int(userID))
             embed.add_field(name=member.name, value=f"level : {dataDict[str(userID)]['level']}\nexp : {dataDict[str(userID)]['exp']}")
         await interaction.response.send_message(embed=embed)

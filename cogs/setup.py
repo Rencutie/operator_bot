@@ -150,12 +150,12 @@ class SetUp(commands.Cog):
 
     async def send_welcome_message(self, member, channel_id):
         if channel_id == -1 :
-            await self.send_log(self.bot, "welcome message not configured.", self.log_channel_id)
+            await send_log(self.bot, "welcome message not configured.", self.log_channel_id)
             return
 
         channel = self.bot.get_channel(channel_id)
         if channel is None:
-            await self.send_log(self.bot, "channel to send welcome message does not exist.", self.log_channel_id)
+            await send_log(self.bot, "channel to send welcome message does not exist.", self.log_channel_id)
             return
         embed = discord.Embed(title=f"Welcome {member.name}", description=f"joined on {member.joined_at.strftime('%d/%m/%Y')}", color=discord.Color.green())
         embed.set_image(url=member.display_avatar.url)
@@ -164,11 +164,11 @@ class SetUp(commands.Cog):
 
     async def send_byebye_message(self, member, channel_id):
         if channel_id == -1 :
-            await self.send_log("bye message not configured.", self.log_channel_id)
+            await send_log("bye message not configured.", self.log_channel_id)
             return
         channel = self.bot.get_channel(channel_id)
         if channel is None:
-            await self.send_log("channel to send bye messages does not exist.", self.log_channel_id)
+            await send_log("channel to send bye messages does not exist.", self.log_channel_id)
             return
         embed = discord.Embed(title=f"we hope never to see you again {member.name}", description=f"joined on {member.joined_at.strftime('%d/%m/%Y')}", color=discord.Color.red())
         embed.set_image(url=member.display_avatar.url)

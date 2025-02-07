@@ -66,7 +66,7 @@ class Moderation(commands.Cog):
             await member.remove_roles(discord.utils.get(self.bot.guilds[0].roles, name="ded"))
             await send_log(self.bot, f"{member.name}'s sentence to the grave has ended.", self.log_channel_id)
         except Exception :
-            sendlog(self.bot, "The 'ded' role is required in the server to use this command.\nWe recomend to restrict access to most of the server for this role for this command to make sense.",self.log_channel_id)
+            send_log(self.bot, "The 'ded' role is required in the server to use this command.\nWe recomend to restrict access to most of the server for this role for this command to make sense.",self.log_channel_id)
     
 
     @app_commands.command(name="purge", description="delete messages (moderators only)")
@@ -82,8 +82,8 @@ class Moderation(commands.Cog):
             return
 
         try :
-            await interaction.response.send_message("ok", ephemeral=True)
             await interaction.channel.purge(limit=count)
+            await interaction.response.send_message("ok", ephemeral=True)
             await send_log(self.bot, f"{interaction.user.name} purged {count} messages in {interaction.channel.name}", self.log_channel_id)
         except :
             await interaction.response.send_message("you can do that here", ephemeral=True)
