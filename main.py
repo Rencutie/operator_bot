@@ -14,7 +14,7 @@ load_dotenv()
 # Load your bot token from environment variables
 TOKEN = os.getenv('DISCORD_TOKEN')
 print("--------------------------------", file=sys.stderr)
-print("starting bot. . .",color="red", file=sys.stderr)
+print("starting bot. . .", file=sys.stderr)
 print("--------------------------------", file=sys.stderr)
 # Set up the bot
 intents = discord.Intents.all()

@@ -11,27 +11,72 @@ from level import loadData, xp_requirements
 class General(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.help_pages = []
+    general_group = app_commands.Group(name="general", description="some all and nothing commands")
 
-    @commands.command()
-    async def ping(self, ctx):
-        await ctx.send('Pong!')
-
-    @app_commands.command(name="ping", description="check if the bot is on")
+    @general_group.command(name="ping", description="check if the bot is on")
     async def slash_ping(self, interaction: discord.Interaction):
         await interaction.response.send_message('Pong!')
     
-    @app_commands.command(name="help", description="show this message")
-    async def slash_help(self, interaction: discord.Interaction):
-        embed = discord.Embed(title="Help", description="List of available commands", color=discord.Color.blue())
-        #set the bot's avatar as the embed's thumbnail
-        embed.set_thumbnail(url=self.bot.user.avatar.url if self.bot.user.avatar else None)
+    def generate_help_pages(self):
+        """Generates help pages based on command groups."""
+        self.help_pages.clear()
         
-        for cmd in self.bot.tree.walk_commands():
-            embed.add_field(name=f"**/{cmd.name}**", value=f"> {cmd.description}", inline=False)
-        embed.set_image(url="https://cdn.discordapp.com/attachments/1299461270914863125/1304133666309541971/bannerBot.jpg?ex=672e489f&is=672cf71f&hm=ec5c4a6a232c6f3c73691c217cbf736cb3ba52cd83281d6af72fc96918d1d103&") #banner
+        def process_group(group, parent_name=""):
+            full_name = f"{parent_name} {group.name}".strip()
+            description = f"**/{full_name}** - {group.description}\n\n"
+            for subcommand in group.commands:
+                if isinstance(subcommand, app_commands.Group):
+                    process_group(subcommand, full_name)
+                else:
+                    description += f"**/{full_name} {subcommand.name}** - {subcommand.description}\n"
+            self.help_pages.append((full_name, description))
+        
+        for command in self.bot.tree.get_commands():
+            if isinstance(command, app_commands.Group):
+                process_group(command)
+            else:
+                self.help_pages.append((command.name, f"**/{command.name}** - {command.description}"))
+    
+    @general_group.command(name="help", description="Shows help for command groups.")
+    async def slash_help(self, interaction: discord.Interaction):
+        self.generate_help_pages()
+        if not self.help_pages:
+            await interaction.response.send_message("No command groups available.", ephemeral=True)
+            return
+        
+        current_page = 0
+        embed = self.create_embed(current_page)
         await interaction.response.send_message(embed=embed)
+        message = await interaction.original_response()
+        
+        await message.add_reaction("⬅️")
+        await message.add_reaction("➡️")
+        
+        def check(reaction, user):
+            return user == interaction.user and reaction.message.id == message.id and reaction.emoji in ["⬅️", "➡️"]
+        
+        while True:
+            try:
+                reaction, user = await self.bot.wait_for("reaction_add", timeout=60.0, check=check)
+                await message.remove_reaction(reaction.emoji, user)
+                
+                if reaction.emoji == "➡️":
+                    current_page = (current_page + 1) % len(self.help_pages)
+                elif reaction.emoji == "⬅️":
+                    current_page = (current_page - 1) % len(self.help_pages)
+                
+                await message.edit(embed=self.create_embed(current_page))
+            except TimeoutError:
+                break
+    
+    def create_embed(self, page_index):
+        group_name, description = self.help_pages[page_index]
+        embed = discord.Embed(title=f"Help - {group_name}", description=description, color=discord.Color.blue())
+        embed.set_footer(text=f"Page {page_index + 1}/{len(self.help_pages)}")
+        return embed
 
-    @app_commands.command(name="profile", description="show a user's profile")
+    @general_group.command(name="profile", description="show a user's profile")
     async def slash_profile(self, interaction: discord.Interaction, member: discord.Member):
         embed = discord.Embed(title=f"{member.name}'s Profile", description=f"Created: {member.created_at.strftime('%d/%m/%Y')}", color=discord.Color.blue())
         embed.set_thumbnail(url=member.display_avatar.url)
@@ -48,7 +93,7 @@ class General(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
     
-    @app_commands.command(name="rule34", description="send a random rule34 image or video", nsfw=True)
+    @general_group.command(name="rule34", description="send a random rule34 image or video", nsfw=True)
     async def slash_rule34(self, interaction: discord.Interaction, tags: str): 
         base_url = "https://api.rule34.xxx/index.php"
 
