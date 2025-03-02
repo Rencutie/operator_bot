@@ -9,9 +9,6 @@ You can use this as an exemple of how to make your own and/or use it as a templa
 - Textual level system <br>
 - random nsfw media matching given tags using rule34 API <br>
 
-# WIP :
-- Using command tree for more understandable navigation (/ban -> /moderation ban for exemple)
-
 # TODO :
 - Switching the json storage with an SQLite database <br>
 - Support for being on multiple servers independently<br>
