@@ -7,7 +7,6 @@ You can use this as an exemple of how to make your own and/or use it as a templa
 - Role interactions <br>
 - Join and play music from youtube in voice chat with a support for playlist <br>
 - Textual level system <br>
-- random nsfw media matching given tags using rule34 API <br>
 
 # TODO :
 - Switching the json storage with an SQLite database <br>
